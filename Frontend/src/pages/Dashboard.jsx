@@ -1,24 +1,56 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '../components/Card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { CheckCircle, Clock, List, TrendingUp } from 'lucide-react';
+import axios from 'axios';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const data = [
-    { name: '10 Apr', completed: 5, pending: 2 },
-    { name: '14 Apr', completed: 8, pending: 3 },
-    { name: '18 Apr', completed: 12, pending: 5 },
-    { name: '22 Apr', completed: 15, pending: 6 },
-    { name: '26 Apr', completed: 18, pending: 8 },
-    { name: '30 Apr', completed: 20, pending: 5 },
-  ];
+  const [report, setReport] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchReports = async () => {
+    try {
+      const res = await axios.get('/api/reports');
+      setReport(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  if (loading) return <div className="loading">Loading Dashboard...</div>;
 
   const stats = [
-    { title: 'Pending Tasks', value: '5', icon: <Clock className="text-warning" />, percent: '25% of total' },
-    { title: 'Completed Tasks', value: '15', icon: <CheckCircle className="text-success" />, percent: '75% of total' },
-    { title: 'Total Tasks', value: '20', icon: <List className="text-primary" />, percent: '100% of total' },
-    { title: 'Productivity Score', value: '75%', icon: <TrendingUp className="text-secondary" />, percent: 'Great job! Keep it up' },
+    { 
+      title: 'Pending Tasks', 
+      value: report?.pendingTasks || 0, 
+      icon: <Clock className="text-warning" />, 
+      percent: 'Immediate attention needed' 
+    },
+    { 
+      title: 'Completed Tasks', 
+      value: report?.completedTasks || 0, 
+      icon: <CheckCircle className="text-success" />, 
+      percent: 'Successfully finished' 
+    },
+    { 
+      title: 'Total Tasks', 
+      value: report?.totalTasks || 0, 
+      icon: <List className="text-primary" />, 
+      percent: 'Total assigned' 
+    },
+    { 
+      title: 'Productivity Score', 
+      value: `${report?.productivityScore || 0}%`, 
+      icon: <TrendingUp className="text-secondary" />, 
+      percent: report?.productivityScore > 70 ? 'Great job! Keep it up' : 'You can do better!' 
+    },
   ];
 
   return (
@@ -45,7 +77,7 @@ const Dashboard = () => {
         <Card title="Tasks Overview">
           <div className="chart-container">
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={data}>
+              <BarChart data={report?.chartData || []}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -60,7 +92,7 @@ const Dashboard = () => {
         <Card title="Task Progress Over Time">
           <div className="chart-container">
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={data}>
+              <LineChart data={report?.chartData || []}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" />
                 <YAxis />

@@ -11,6 +11,7 @@ import './index.css';
 import Schedules from './pages/Schedules';
 import Profile from './pages/Profile';
 import Goals from './pages/Goals';
+import Suggestions from './pages/Suggestions';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="schedules" element={<Schedules />} />
               <Route path="goals" element={<Goals />} />
+              <Route path="suggestions" element={<Suggestions />} />
               <Route path="profile" element={<Profile />} />
               {/* Add other routes here */}
             </Route>
