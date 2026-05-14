@@ -1,0 +1,23 @@
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.page-container {
+  padding: 30px;
+  flex: 1;
+  background-color: var(--background-color);
+}
+
+/* Collapsed State */
+.admin-layout.collapsed {
+  --sidebar-width: 80px;
+}
